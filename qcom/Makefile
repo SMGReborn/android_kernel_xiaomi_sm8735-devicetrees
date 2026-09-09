@@ -121,6 +121,14 @@ XIAOMI_TUNA_BOARDS += \
 onyx-overlays-dtb-$(CONFIG_ARCH_TUNA) += $(XIAOMI_TUNA_BOARDS) $(TUNA_BASE_DTB)
 
 dtb-y += $(onyx-overlays-dtb-y)
+
+SUN_BASE_DTB += sun.dtb sun-v2.dtb sun-tp.dtb sun-tp-v2.dtb
+XIAOMI_SUN_BOARDS += \
+		annibale-sm8750-overlay.dtbo
+
+onyx-overlays-dtb-$(CONFIG_ARCH_SUN) += $(XIAOMI_SUN_BOARDS) $(SUN_BASE_DTB)
+
+dtb-y += $(annibale-overlays-dtb-y)
 endif
 
 QCS610_BASE_DTB += qcs610.dtb
