@@ -1,0 +1,199 @@
+#include "sun-audio-mtp.dtsi"
+#include "annibale-audio-pinctrl.dtsi"
+
+&lpass_cdc {
+    qcom,num-macros = <3>;
+};
+
+&wcd939x_tx_slave {
+    status = "okay";
+};
+
+&wsa_macro {
+    status = "disabled";
+};
+
+&wsa884x_0221 {
+    status = "disabled";
+};
+
+&wsa884x_0220 {
+    status = "disabled";
+};
+
+&wsa_spkr_en02 {
+    status = "disabled";
+};
+
+&wsa_spkr_en13 {
+    status = "disabled";
+};
+
+&swr0 {
+    status = "disabled";
+
+    wsa883x_0221: wsa883x@02170221 {
+        status = "disabled";
+    };
+
+    wsa883x_0222: wsa883x@02170222 {
+        status = "disabled";
+    };
+};
+
+&cdc_dmic01_gpios {
+    status = "okay";
+};
+
+&cdc_dmic23_gpios {
+    status = "okay";
+};
+
+&cdc_quin_mi2s_gpios {
+    status = "okay";
+};
+
+&fm_i2s1_gpios {
+    status = "disabled";
+};
+
+&lpass_bt_swr {
+    status = "okay";
+};
+
+&soc {
+    si_pa_L: si_pa_L {
+        channel_num = <0>;
+        compatible = "si,sia91xx";
+        pinctrl-0 = <&sia91xx_gpio_L>;
+        pinctrl-names = "si_pa_gpio";
+        si,is_digital_pa = <1>;
+        si,si_pa_disable_pin = <0>;
+        si,si_pa_reset = <&tlmm 124 0>;
+        si,si_pa_type = "sia9187";
+        spksw-gpio = <&tlmm 183 0>;
+    };
+
+    si_pa_R: si_pa_R {
+        channel_num = <1>;
+        compatible = "si,sia91xx";
+        pinctrl-0 = <&sia91xx_gpio_R>;
+        pinctrl-names = "si_pa_gpio";
+        si,is_digital_pa = <1>;
+        si,si_pa_disable_pin = <0>;
+        si,si_pa_reset = <&tlmm 128 0>;
+        si,si_pa_type = "sia9187";
+    };
+};
+
+&qupv3_se15_i2c {
+    status = "okay";
+
+    sipa_i2c_L: sipa_i2c_L@6e {
+        compatible = "si,sia91xx-i2c";
+        reg = <0x6e>;
+        si,sipa-dev = <&si_pa_L>;
+        sound-name-prefix = "SpkrLeft";
+        status = "okay";
+    };
+
+    sipa_i2c_R: sipa_i2c_R@6c {
+        compatible = "si,sia91xx-i2c";
+        reg = <0x6c>;
+        si,sipa-dev = <&si_pa_R>;
+        sound-name-prefix = "SpkrRight";
+        status = "okay";
+    };
+
+    tfa98xx_1@36 {
+        compatible = "nxp,tfa98xx";
+        reg = <0x36>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&tfa_reset_default_0 &tfa_irq_default_0>;
+        reset-gpio = <&tlmm 124 0>;
+        irq-gpio = <&tlmm 127 0x2008>;
+        status = "okay"; 
+    };
+    
+    tfa98xx_2@34 {
+        compatible = "nxp,tfa98xx";
+        reg = <0x34>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&tfa_reset_default_1 &tfa_irq_default_1>;
+        reset-gpio = <&tlmm 128 0>;
+        irq-gpio = <&tlmm 129 0x2008>;
+        status = "okay";
+    };
+};
+
+&qupv3_se5_i2c {
+    status = "okay";
+
+    fsa4480: fsa4480@42 {
+        compatible = "qcom,fsa4480-i2c";
+        reg = <0x42>;
+        status = "okay";
+    };
+
+    sih6887_haptic@6b {
+        compatible = "silicon,sih_haptic_688X";
+        reg = <0x6b>;
+        interrupt = <0x1a 0x1>;
+        irq-gpio = <&tlmm 135 0>;
+        reset-gpio = <&tlmm 38 0>;
+        pinctrl-0 = <&sih_reset_low>;
+        pinctrl-1 = <&sih_reset_high>;
+        pinctrl-2 = <&sih_interrupt>;
+        pinctrl-names = "sih_reset_reset", "sih_reset_active", "sih_interrupt_active";
+        status = "okay";
+        lra_name = "0809";
+        vib_bst_vol_default = <0x5c>;
+        vib_effect_id_boundary = <0xa>;
+        vib_effect_max = <0xc5>;
+        vib_f0_pre = <0x6a4>;
+    };
+};
+
+&sun_snd {
+    /delete-property/ qcom,sec-mi2s-gpios;
+    qcom,quin-mi2s-gpios = <&cdc_quin_mi2s_gpios>;
+    qcom,tdm-audio-intf = <1>;
+    qcom,tdm-clk-attribute = <0x4>, <0x4>, <0x4>, <0x4>, <0x4>, <0x4>, <0x4>, <0x4>;
+    qcom,tdm-max-slots = <4>;
+    qcom,uart-audio-sw-gpio = <&sbu_uart_en>;
+    qcom,wcd-disable-legacy-surge;
+    qcom,msm-mbhc-usbc-audio-supported = <1>;
+    qcom,msm-mbhc-hphl-swh = <0>;
+    qcom,msm-mbhc-gnd-swh = <0>;
+    qcom,wsa-max-devs = <0>;
+    swr-haptics-unsupported;
+    
+    fsa4480-i2c-handle = <&fsa4480>;
+
+    qcom,audio-routing =
+        "TX DMIC0", "Digital Mic0",
+        "TX DMIC1", "Digital Mic1",
+        "TX DMIC2", "Digital Mic2",
+        "TX DMIC3", "Digital Mic3",
+        "TX DMIC4", "Digital Mic4",
+        "TX DMIC5", "Digital Mic5",
+        "HAP_IN", "WSA2_HAPT OUT",
+        "RX_TX DEC0_INP", "TX DEC0 MUX",
+        "RX_TX DEC1_INP", "TX DEC1 MUX",
+        "RX_TX DEC2_INP", "TX DEC2 MUX",
+        "RX_TX DEC3_INP", "TX DEC3 MUX",
+        "VA SWR_INPUT", "VA_SWR_CLK",
+        "VA_AIF1 CAP", "VA_SWR_CLK",
+        "VA_AIF2 CAP", "VA_SWR_CLK",
+        "VA_AIF3 CAP", "VA_SWR_CLK",
+        "VA DMIC0", "Digital Mic0",
+        "VA DMIC1", "Digital Mic1",
+        "VA DMIC2", "Digital Mic2",
+        "VA DMIC3", "Digital Mic3",
+        "VA DMIC4", "Digital Mic4",
+        "VA DMIC5", "Digital Mic5";
+};
+
+&wcd_usbss {
+    status = "disabled";
+};
